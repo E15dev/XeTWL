@@ -1,6 +1,6 @@
 #include <cstdint>
 
-namespace xetws {
+namespace xetwl {
     #pragma pack(1)
     struct pixel {
         uint8_t bg;
