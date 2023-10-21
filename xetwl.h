@@ -15,21 +15,23 @@ namespace xetwl {
     class Window {
         public:
             Window(int, int, bool);
-            bool auto_update;
-            int get_screen_len();
+            bool autoupdate;
+            int getScreenLen();
             float render();
             void clear(pixel);
+            void setPixel(int, int, pixel);
+            void setPixel(int, int, uint8_t, uint8_t, char);
         private:
             bool fullscreen;
             int sizex;
             int sizey;
             pixel* pixelsp;
-            void render_title();
-            void render_input();
-            void render_frame();
+            void renderTitle();
+            void renderInput();
+            void renderFrame();
     };
 
-    Window getMaxWindow();
+    Window getMaxWindow(bool);
 }
 
 #endif
