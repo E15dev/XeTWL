@@ -1,6 +1,5 @@
 echo -e "\033[7mclean\033[0m"
-rm -rf *.o
-rm -rf *.a
+rm -f *.o *.a
 
 echo -e "\033[7mcreate xetwl lib\033[0m"
 g++ -std=c++11 -c xetwl.cpp -o xetwl.o

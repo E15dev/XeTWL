@@ -1,3 +1,6 @@
+#ifndef XETWL_H
+#define XETWL_H
+
 #include <cstdint>
 
 namespace xetwl {
@@ -11,17 +14,22 @@ namespace xetwl {
 
     class Window {
         public:
-            Window(int, int);
+            Window(int, int, bool);
             bool auto_update;
+            int get_screen_len();
             float render();
             void clear(pixel);
         private:
+            bool fullscreen;
             int sizex;
             int sizey;
             pixel* pixelsp;
             void render_title();
             void render_input();
+            void render_frame();
     };
 
     Window getMaxWindow();
 }
+
+#endif
