@@ -19,6 +19,7 @@ namespace xetwl {
             int getScreenLen();
             float render();
             void clear(pixel);
+            pixel getPixel(int, int);
             void setPixel(int, int, pixel);
             void setPixel(int, int, uint8_t, uint8_t, char);
         private:

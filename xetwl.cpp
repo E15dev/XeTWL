@@ -27,6 +27,10 @@ void xetwl::Window::clear(xetwl::pixel px) {
     }
 }
 
+xetwl::pixel xetwl::Window::getPixel(int x, int y) {
+    return pixelsp[y*sizex+x];
+}
+
 void xetwl::Window::setPixel(int x, int y, xetwl::pixel px) { pixelsp[y*sizex + x] = px; };
 void xetwl::Window::setPixel(int x, int y, unsigned char bg, unsigned char fg, char letter) { pixelsp[y*sizex + x].bg = bg; pixelsp[y*sizex + x].fg = fg; pixelsp[y*sizex + x].letter = letter; };
 
