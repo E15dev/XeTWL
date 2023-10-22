@@ -11,8 +11,7 @@ xetwl::Window::Window(int sx, int sy, bool fs) {
 
     autoupdate = 0;
     fullscreen = fs; sizex = sx; sizey = sy;
-    xetwl::pixel bgpx; bgpx.bg = 0; bgpx.fg = 28; bgpx.letter = ' ';
-    clear(bgpx); // init screen
+    clear();
 }
 
 int xetwl::Window::getScreenLen() { if (fullscreen) { return sizex*sizey; }; return sizex*(sizey-4); };
@@ -22,9 +21,17 @@ void xetwl::Window::clear(xetwl::pixel px) {
 
     pixelsp = new xetwl::pixel[screenlen];
     for (int i = 0; i<screenlen; i++) {
-        px.letter = 65 + i%32; // TEST
         pixelsp[i] = px;
     }
+}
+
+void xetwl::Window::clear() {
+    xetwl::pixel px;
+    px.bg = 0;
+    px.fg = 255;
+    px.letter = ' ';
+    px.transparent = false;
+    xetwl::Window::clear(px);
 }
 
 xetwl::pixel xetwl::Window::getPixel(int x, int y) {
@@ -32,7 +39,7 @@ xetwl::pixel xetwl::Window::getPixel(int x, int y) {
 }
 
 void xetwl::Window::setPixel(int x, int y, xetwl::pixel px) { pixelsp[y*sizex + x] = px; };
-void xetwl::Window::setPixel(int x, int y, unsigned char bg, unsigned char fg, char letter) { pixelsp[y*sizex + x].bg = bg; pixelsp[y*sizex + x].fg = fg; pixelsp[y*sizex + x].letter = letter; };
+void xetwl::Window::setPixel(int x, int y, unsigned char bg, unsigned char fg, char letter, bool tr) { pixelsp[y*sizex + x].bg = bg; pixelsp[y*sizex + x].fg = fg; pixelsp[y*sizex + x].letter = letter; pixelsp[y*sizex + x].transparent = tr;};
 
 void xetwl::Window::renderTitle() {
     int lp = (sizex/2)-6;
@@ -50,8 +57,11 @@ void xetwl::Window::renderInput() {
 void xetwl::Window::renderFrame() {
     for (int i = 0; i<sizey-(4*!fullscreen); i++) {
         for (int j = 0; j<sizex; j++) {
-            printf("\033[38;5;%dm\033[48;5;%dm%c", pixelsp[j + i*sizex].fg, pixelsp[j + i*sizex].bg, pixelsp[j + i*sizex].letter);
-//            printf("%c", pixelsp[j + i*sizex].letter);
+            if (pixelsp[j + i*sizex].transparent) {
+                printf("\033[0m ");
+            } else {
+                printf("\033[38;5;%dm\033[48;5;%dm%c", pixelsp[j + i*sizex].fg, pixelsp[j + i*sizex].bg, pixelsp[j + i*sizex].letter);
+            }
         }
     }
 }
@@ -80,6 +90,5 @@ float xetwl::Window::render() {
 xetwl::Window xetwl::getMaxWindow(bool fs) {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    xetwl::Window win = xetwl::Window(w.ws_col, w.ws_row, fs);
-    return win;
+    return xetwl::Window(w.ws_col, w.ws_row, fs);
 }

@@ -9,7 +9,7 @@ namespace xetwl {
         uint8_t bg;
         uint8_t fg;
         char letter;
-        char NOTHING; // so it will be 4 bytes
+        bool transparent;
     }; // 4 bytes
 
     class Window {
@@ -18,10 +18,11 @@ namespace xetwl {
             bool autoupdate;
             int getScreenLen();
             float render();
+            void clear();
             void clear(pixel);
             pixel getPixel(int, int);
             void setPixel(int, int, pixel);
-            void setPixel(int, int, uint8_t, uint8_t, char);
+            void setPixel(int, int, uint8_t, uint8_t, char, bool); // x y background textcolor transparent
         private:
             bool fullscreen;
             int sizex;
