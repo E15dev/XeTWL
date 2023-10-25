@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-xetwl::Window::Window(int sx, int sy, bool fs) {
+xetwl::Window::Window(uint16_t sx, uint16_t sy, bool fs) {
     if (sx<1 || sy<5) {
         printf("WINDOW CREATION FAILED, WINDOW TOO SMALL");
 //        exit(-1); // doesnt work???
@@ -11,18 +11,19 @@ xetwl::Window::Window(int sx, int sy, bool fs) {
 
     autoupdate = 0;
     fullscreen = fs; sizex = sx; sizey = sy;
+    init();
     clear();
 }
 
 int xetwl::Window::getScreenLen() { if (fullscreen) { return sizex*sizey; }; return sizex*(sizey-4); };
 
-void xetwl::Window::clear(xetwl::pixel px) {
-    int screenlen = getScreenLen();
+void xetwl::Window::init() { pixelsp = new xetwl::pixel[getScreenLen()]; }
 
-    pixelsp = new xetwl::pixel[screenlen];
-    for (int i = 0; i<screenlen; i++) {
+void xetwl::Window::clear(xetwl::pixel px) {
+    for (int i = 0; i<getScreenLen(); i++) {
         pixelsp[i] = px;
     }
+    renderA();
 }
 
 void xetwl::Window::clear() {
@@ -34,24 +35,17 @@ void xetwl::Window::clear() {
     xetwl::Window::clear(px);
 }
 
-xetwl::pixel xetwl::Window::getPixel(int x, int y) {
-    return pixelsp[y*sizex+x];
-}
+xetwl::pixel xetwl::Window::getPixel(uint16_t x, uint16_t y) { return pixelsp[y*sizex+x]; }
 
-void xetwl::Window::setPixel(int x, int y, xetwl::pixel px) { pixelsp[y*sizex + x] = px; };
-void xetwl::Window::setPixel(int x, int y, unsigned char bg, unsigned char fg, char letter, bool tr) { pixelsp[y*sizex + x].bg = bg; pixelsp[y*sizex + x].fg = fg; pixelsp[y*sizex + x].letter = letter; pixelsp[y*sizex + x].transparent = tr;};
+void xetwl::Window::setPixel(uint16_t x, uint16_t y, xetwl::pixel px) { pixelsp[y*sizex + x] = px; renderA(); };
+void xetwl::Window::setPixel(uint16_t x, uint16_t y, unsigned char bg, unsigned char fg, char lt, bool tr) { int i = y*sizex + x; pixelsp[i].bg = bg; pixelsp[i].fg = fg; pixelsp[i].letter = lt; pixelsp[i].transparent = tr; renderA(); }
 
 void xetwl::Window::renderTitle() {
     int lp = (sizex/2)-6;
     int rp = sizex-lp-12;
-    for (int i = 0; i<lp; i++) { printf(" "); }
+    for (int i = 0; i<lp; i++) { printf("-"); }
     printf("THIS_IS_TEST");
-    for (int i = 0; i<rp; i++) { printf(" "); }
-}
-
-void xetwl::Window::renderInput() {
-    printf("\033[0m");
-    for (int i = 0; i<sizex; i++) { printf("~"); }
+    for (int i = 0; i<rp; i++) { printf("-"); }
 }
 
 void xetwl::Window::renderFrame() {
@@ -75,14 +69,16 @@ float xetwl::Window::render() {
     renderFrame();
     if (fullscreen) {
         printf("\033[0;0H");
+        cursorx = 0; cursory = 0;
     }
 
     if (!fullscreen) {
-        printf("\n\r");
-        renderInput();
-        renderInput();
-        printf("\033[1F"); // move cursor to input0
+        for (int i = 0; i<sizex; i++) {
+            printf("-");
+        }
+        printf("\n\r"); printf("\n\r");
     }
+
     fflush(stdout);
     return 0.0; // TODO RETURN TIME IT TOOK TO RENDER IT
 }
@@ -92,3 +88,5 @@ xetwl::Window xetwl::getMaxWindow(bool fs) {
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     return xetwl::Window(w.ws_col, w.ws_row, fs);
 }
+
+void xetwl::Window::renderA() { if (autoupdate) { render(); } }

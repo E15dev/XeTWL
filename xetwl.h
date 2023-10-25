@@ -14,23 +14,30 @@ namespace xetwl {
 
     class Window {
         public:
-            Window(int, int, bool);
+            Window(uint16_t, uint16_t, bool);
+
             bool autoupdate;
+            uint16_t cursorx;
+            uint16_t cursory;
+
             int getScreenLen();
             float render();
             void clear();
             void clear(pixel);
-            pixel getPixel(int, int);
-            void setPixel(int, int, pixel);
-            void setPixel(int, int, uint8_t, uint8_t, char, bool); // x y background textcolor transparent
+            pixel getPixel(uint16_t, uint16_t);
+            void setPixel(uint16_t, uint16_t, pixel);
+            void setPixel(uint16_t, uint16_t, uint8_t, uint8_t, char, bool); // x y background textcolor transparent
+
         private:
             bool fullscreen;
-            int sizex;
-            int sizey;
+            uint16_t sizex;
+            uint16_t sizey;
             pixel* pixelsp;
+
+            void init(); // init pixelsp
             void renderTitle();
-            void renderInput();
             void renderFrame();
+            void renderA();
     };
 
     Window getMaxWindow(bool);
