@@ -19,11 +19,11 @@ int xetwl::Window::getScreenLen() { if (fullscreen) { return sizex*sizey; }; ret
 
 void xetwl::Window::init() { pixelsp = new xetwl::pixel[getScreenLen()]; }
 
+void xetwl::Window::syncCursor() { printf("\033[%d;%dH", 1+cursory+!fullscreen, cursorx+1); } // this is counting form 1 belive thats why i need to add 1
+
 void xetwl::Window::clear(xetwl::pixel px) {
-    for (int i = 0; i<getScreenLen(); i++) {
-        pixelsp[i] = px;
-    }
-    renderA();
+    for (int i = 0; i<getScreenLen(); i++) { pixelsp[i] = px; }
+    if (autoupdate) {render();}
 }
 
 void xetwl::Window::clear() {
@@ -37,8 +37,24 @@ void xetwl::Window::clear() {
 
 xetwl::pixel xetwl::Window::getPixel(uint16_t x, uint16_t y) { return pixelsp[y*sizex+x]; }
 
-void xetwl::Window::setPixel(uint16_t x, uint16_t y, xetwl::pixel px) { pixelsp[y*sizex + x] = px; renderA(); };
-void xetwl::Window::setPixel(uint16_t x, uint16_t y, unsigned char bg, unsigned char fg, char lt, bool tr) { int i = y*sizex + x; pixelsp[i].bg = bg; pixelsp[i].fg = fg; pixelsp[i].letter = lt; pixelsp[i].transparent = tr; renderA(); }
+// set pixels with autoupdate works by seting cursor in position and replacing pixel
+void xetwl::Window::setPixel(uint16_t x, uint16_t y, xetwl::pixel px) {
+    pixelsp[y*sizex + x] = px;
+    if (autoupdate) {
+        printf("\033[%d;%dH", 1+y+!fullscreen, 1+x);
+        printf("\033[38;5;%dm\033[48;5;%dm%c", px.fg, px.bg, px.letter);
+    }
+};
+void xetwl::Window::setPixel(uint16_t x, uint16_t y, unsigned char bg, unsigned char fg, char lt, bool tr) {
+    int i = y*sizex + x;
+    pixelsp[i].bg = bg; pixelsp[i].fg = fg;
+    pixelsp[i].letter = lt;
+    pixelsp[i].transparent = tr;
+    if (autoupdate) {
+        printf("\033[%d;%dH", 1+y+!fullscreen, 1+x);
+        printf("\033[38;5;%dm\033[48;5;%dm%c", fg, bg, lt);
+    }
+}
 
 void xetwl::Window::renderTitle() {
     int lp = (sizex/2)-6;
@@ -78,7 +94,7 @@ float xetwl::Window::render() {
         }
         printf("\n\r"); printf("\n\r");
     }
-
+    syncCursor();
     fflush(stdout);
     return 0.0; // TODO RETURN TIME IT TOOK TO RENDER IT
 }
@@ -88,5 +104,3 @@ xetwl::Window xetwl::getMaxWindow(bool fs) {
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     return xetwl::Window(w.ws_col, w.ws_row, fs);
 }
-
-void xetwl::Window::renderA() { if (autoupdate) { render(); } }

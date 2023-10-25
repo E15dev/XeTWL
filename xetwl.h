@@ -20,13 +20,14 @@ namespace xetwl {
             uint16_t cursorx;
             uint16_t cursory;
 
+            void syncCursor();
             int getScreenLen();
             float render();
             void clear();
             void clear(pixel);
             pixel getPixel(uint16_t, uint16_t);
             void setPixel(uint16_t, uint16_t, pixel);
-            void setPixel(uint16_t, uint16_t, uint8_t, uint8_t, char, bool); // x y background textcolor transparent
+            void setPixel(uint16_t, uint16_t, uint8_t, uint8_t, char, bool);    // x y background textcolor transparent
 
         private:
             bool fullscreen;
@@ -34,10 +35,9 @@ namespace xetwl {
             uint16_t sizey;
             pixel* pixelsp;
 
-            void init(); // init pixelsp
+            void init();                                                        // init pixelsp
             void renderTitle();
             void renderFrame();
-            void renderA();
     };
 
     Window getMaxWindow(bool);
