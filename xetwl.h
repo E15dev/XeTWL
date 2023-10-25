@@ -20,6 +20,7 @@ namespace xetwl {
             uint16_t cursorx;
             uint16_t cursory;
 
+            void clipCursor();
             void syncCursor();
             int getScreenLen();
             float render();

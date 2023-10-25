@@ -19,11 +19,21 @@ int xetwl::Window::getScreenLen() { if (fullscreen) { return sizex*sizey; }; ret
 
 void xetwl::Window::init() { pixelsp = new xetwl::pixel[getScreenLen()]; }
 
-void xetwl::Window::syncCursor() { printf("\033[%d;%dH", 1+cursory+!fullscreen, cursorx+1); } // this is counting form 1 belive thats why i need to add 1
+void xetwl::Window::clipCursor() {
+    if (cursorx > sizex-1) cursorx=sizex-1;
+    if (cursory > sizey-(4*!fullscreen)-1) cursory=sizey-(4*!fullscreen)-1;
+    if (cursorx < 0) cursorx=0; // ITS UINT16_T NOT INT16_T, IT CANT BE BELOW 0 TODO
+    if (cursory < 0) cursory=0;
+}
+
+void xetwl::Window::syncCursor() {
+    clipCursor();
+    printf("\033[%d;%dH", 1+cursory+!fullscreen, cursorx+1);    // this is counting form 1 belive thats why i need to add 1
+}
 
 void xetwl::Window::clear(xetwl::pixel px) {
     for (int i = 0; i<getScreenLen(); i++) { pixelsp[i] = px; }
-    if (autoupdate) {render();}
+    if (autoupdate) render();
 }
 
 void xetwl::Window::clear() {
@@ -45,6 +55,7 @@ void xetwl::Window::setPixel(uint16_t x, uint16_t y, xetwl::pixel px) {
         printf("\033[38;5;%dm\033[48;5;%dm%c", px.fg, px.bg, px.letter);
     }
 };
+
 void xetwl::Window::setPixel(uint16_t x, uint16_t y, unsigned char bg, unsigned char fg, char lt, bool tr) {
     int i = y*sizex + x;
     pixelsp[i].bg = bg; pixelsp[i].fg = fg;
@@ -85,7 +96,6 @@ float xetwl::Window::render() {
     renderFrame();
     if (fullscreen) {
         printf("\033[0;0H");
-        cursorx = 0; cursory = 0;
     }
 
     if (!fullscreen) {
