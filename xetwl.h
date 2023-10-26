@@ -4,6 +4,8 @@
 #include <cstdint>
 
 namespace xetwl {
+    bool canBeDisplayed(char); // I NEED BETTER NAME FOR THIS
+
     #pragma pack(1)
     struct pixel {
         uint8_t bg;
@@ -28,7 +30,7 @@ namespace xetwl {
             void clear(pixel);
             pixel getPixel(uint16_t, uint16_t);
             void setPixel(uint16_t, uint16_t, pixel);
-            void setPixel(uint16_t, uint16_t, uint8_t, uint8_t, char, bool);    // x y background textcolor transparent
+            void setPixel(uint16_t, uint16_t, uint8_t, uint8_t, char, bool);    // x y background textcolor char transparent
 
         private:
             bool fullscreen;

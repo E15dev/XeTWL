@@ -3,6 +3,10 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
+bool xetwl::canBeDisplayed(char ch) {
+    return ch >= 32 && ch < 127;
+}
+
 xetwl::Window::Window(uint16_t sx, uint16_t sy, bool fs) {
     if (sx<1 || sy<5) {
         printf("WINDOW CREATION FAILED, WINDOW TOO SMALL");
@@ -20,10 +24,10 @@ int xetwl::Window::getScreenLen() { if (fullscreen) { return sizex*sizey; }; ret
 void xetwl::Window::init() { pixelsp = new xetwl::pixel[getScreenLen()]; }
 
 void xetwl::Window::clipCursor() {
+    if (cursorx > 32768) cursorx=0; // its unsigned so instead checking if its negative it needs to check if its above half of max
+    if (cursory > 32768) cursory=0;
     if (cursorx > sizex-1) cursorx=sizex-1;
     if (cursory > sizey-(4*!fullscreen)-1) cursory=sizey-(4*!fullscreen)-1;
-    if (cursorx < 0) cursorx=0; // ITS UINT16_T NOT INT16_T, IT CANT BE BELOW 0 TODO
-    if (cursory < 0) cursory=0;
 }
 
 void xetwl::Window::syncCursor() {
@@ -81,6 +85,7 @@ void xetwl::Window::renderFrame() {
             if (pixelsp[j + i*sizex].transparent) {
                 printf("\033[0m ");
             } else {
+                if (canBeDisplayed(pixelsp[j + i*sizex].letter)) {pixelsp[j + i*sizex].letter = ' ';} // so it wont break render
                 printf("\033[38;5;%dm\033[48;5;%dm%c", pixelsp[j + i*sizex].fg, pixelsp[j + i*sizex].bg, pixelsp[j + i*sizex].letter);
             }
         }
