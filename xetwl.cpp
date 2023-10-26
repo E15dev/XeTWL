@@ -85,7 +85,7 @@ void xetwl::Window::renderFrame() {
             if (pixelsp[j + i*sizex].transparent) {
                 printf("\033[0m ");
             } else {
-                if (canBeDisplayed(pixelsp[j + i*sizex].letter)) {pixelsp[j + i*sizex].letter = ' ';} // so it wont break render
+                if (!canBeDisplayed(pixelsp[j + i*sizex].letter)) {pixelsp[j + i*sizex].letter = ' ';} // so it wont break render
                 printf("\033[38;5;%dm\033[48;5;%dm%c", pixelsp[j + i*sizex].fg, pixelsp[j + i*sizex].bg, pixelsp[j + i*sizex].letter);
             }
         }
@@ -99,9 +99,6 @@ float xetwl::Window::render() {
     }
 
     renderFrame();
-    if (fullscreen) {
-        printf("\033[0;0H");
-    }
 
     if (!fullscreen) {
         for (int i = 0; i<sizex; i++) {
