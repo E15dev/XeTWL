@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <stdlib.h> // exit
 
 bool xetwl::canBeDisplayed(char ch) {
     return ch >= 32 && ch < 127;
@@ -10,7 +11,7 @@ bool xetwl::canBeDisplayed(char ch) {
 xetwl::Window::Window(uint16_t sx, uint16_t sy, bool fs) {
     if (sx<1 || sy<5) {
         printf("WINDOW CREATION FAILED, WINDOW TOO SMALL");
-//        exit(-1); // doesnt work???
+        exit(1);
     }
 
     autoupdate = 0;
