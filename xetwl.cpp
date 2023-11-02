@@ -10,7 +10,7 @@ bool xetwl::canBeDisplayed(char ch) {
 
 xetwl::Window::Window(uint16_t sx, uint16_t sy, bool fs) {
     if (sx<1 || sy<5) {
-        printf("WINDOW CREATION FAILED, WINDOW TOO SMALL");
+        printf("WINDOW CREATION FAILED (TOO SMALL)\n\r");
         exit(1);
     }
 
